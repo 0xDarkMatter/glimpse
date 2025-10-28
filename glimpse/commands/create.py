@@ -90,14 +90,24 @@ def create(duration, targets, name, source):
                 # Fetch random image
                 image = image_service.fetch_random_image()
 
-                target_list.append({
+                target_dict = {
                     'code': code,
                     'targetUrl': image['url'],
                     'targetDescription': image['description'],
                     'targetSource': image_service.name,
                     'targetSourceUrl': image.get('sourceUrl', image['url']),
                     'revealed': False
-                })
+                }
+
+                # Add optional fields if available
+                if image.get('locationUrl'):
+                    target_dict['targetLocationUrl'] = image['locationUrl']
+                if image.get('date'):
+                    target_dict['targetDate'] = image['date']
+                if image.get('copyright'):
+                    target_dict['targetCopyright'] = image['copyright']
+
+                target_list.append(target_dict)
             except Exception as e:
                 click.echo(click.style(f'\nError creating target: {e}', fg='red'))
                 return

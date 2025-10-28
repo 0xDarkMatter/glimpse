@@ -8,6 +8,15 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 
+def format_timestamp(iso_timestamp: str) -> str:
+    """Format ISO timestamp to human-readable format"""
+    try:
+        dt = datetime.fromisoformat(iso_timestamp)
+        return dt.strftime('%B %d, %Y at %I:%M:%S %p')
+    except (ValueError, AttributeError):
+        return iso_timestamp
+
+
 class StorageService:
     """Service for storing and retrieving RV sessions"""
 
@@ -59,8 +68,8 @@ class StorageService:
         lines.append(f"# RV Session: {session.get('name', session['id'])}")
         lines.append('')
         lines.append(f"**Session ID:** {session['id']}")
-        lines.append(f"**Created:** {session['createdAt']}")
-        lines.append(f"**Reveal At:** {session['revealAt']}")
+        lines.append(f"**Created:** {format_timestamp(session['createdAt'])}")
+        lines.append(f"**Reveal At:** {format_timestamp(session['revealAt'])}")
         lines.append(f"**Number of Targets:** {len(session['targets'])}")
         lines.append('')
 
@@ -95,18 +104,33 @@ class StorageService:
                 # Generate appropriate link text based on source
                 source = target.get('targetSource', 'unsplash')
                 source_url = target.get('targetSourceUrl', target['targetUrl'])
+                location_url = target.get('targetLocationUrl')
 
                 if source == 'google_streetview':
-                    link_text = 'View on Google Maps'
+                    lines.append('[View in Street View](' + source_url + ')')
+                    if location_url:
+                        lines.append(' • [View Location on Map](' + location_url + ')')
                 elif source == 'unsplash':
-                    link_text = 'View on Unsplash'
+                    lines.append(f"[View on Unsplash]({source_url})")
                 else:
-                    link_text = 'View Source'
+                    lines.append(f"[View Source]({source_url})")
 
-                lines.append(f"[{link_text}]({source_url})")
                 lines.append('')
+
+                # Add metadata for Street View
+                if source == 'google_streetview':
+                    metadata_added = False
+                    if target.get('targetDate'):
+                        lines.append(f"**Captured:** {target['targetDate']}")
+                        metadata_added = True
+                    if target.get('targetCopyright'):
+                        lines.append(f"**Copyright:** {target['targetCopyright']}")
+                        metadata_added = True
+                    if metadata_added:
+                        lines.append('')
+
                 if target.get('revealedAt'):
-                    lines.append(f"**Revealed At:** {target['revealedAt']}")
+                    lines.append(f"**Revealed At:** {format_timestamp(target['revealedAt'])}")
 
             lines.append('')
             lines.append('---')
