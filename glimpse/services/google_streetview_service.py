@@ -17,8 +17,8 @@ class GoogleStreetViewService:
         self.image_url = 'https://maps.googleapis.com/maps/api/streetview'
         self.name = 'google_streetview'
 
-        # Image size for Street View
-        self.image_size = '640x640'
+        # Image size for Street View (16:9 aspect ratio)
+        self.image_size = '640x360'
 
         # Max retries when looking for valid Street View locations
         self.max_retries = 20
