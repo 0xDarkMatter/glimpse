@@ -13,28 +13,29 @@ Glimpse is a command-line tool designed for Remote Viewing practitioners and res
 - **Unique Session Codes**: Generate Crockford's Base32 codes (format: XXXX-XXXX)
 - **Time-Based Reveals**: Automatically enable reveals after specified duration
 - **Force Reveal**: Override time restrictions for testing purposes
-- **Persistent Storage**: Sessions stored as JSON files
+- **Persistent Storage**: Sessions stored as JSON and Markdown files
 - **Status Tracking**: Monitor session status and time remaining
+- **Markdown Summaries**: Human-readable session summaries generated automatically
 
 ## Installation
 
 ### Prerequisites
 
-- Node.js 18.0.0 or higher
-- npm or yarn
+- Python 3.8 or higher
+- pip
 - Unsplash API access key (free at [unsplash.com/developers](https://unsplash.com/developers))
 
 ### Setup
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd Glimpse
+git clone https://github.com/0xDarkMatter/glimpse
+cd glimpse
 ```
 
-2. Install dependencies:
+2. Install the package:
 ```bash
-npm install
+pip install -e .
 ```
 
 3. Configure environment variables:
@@ -45,16 +46,6 @@ cp .env.example .env
 Edit `.env` and add your Unsplash API key:
 ```
 UNSPLASH_ACCESS_KEY=your_actual_key_here
-```
-
-4. Build the project:
-```bash
-npm run build
-```
-
-5. (Optional) Link globally for system-wide access:
-```bash
-npm link
 ```
 
 ## Usage

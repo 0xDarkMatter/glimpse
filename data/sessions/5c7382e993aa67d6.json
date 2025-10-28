@@ -1,0 +1,43 @@
+{
+  "id": "5c7382e993aa67d6",
+  "name": "Test Session",
+  "targets": [
+    {
+      "code": "SC66-5Z0A",
+      "targetUrl": "https://images.unsplash.com/photo-1759834857095-4e172a6d03f5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MjI0Nzd8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NjE2MzAwODR8&ixlib=rb-4.1.0&q=80&w=1080",
+      "targetDescription": "Person riding a yellow bicycle with basket",
+      "targetSource": "unsplash",
+      "revealed": false
+    },
+    {
+      "code": "6YXC-Y09N",
+      "targetUrl": "https://images.unsplash.com/photo-1759503452557-6cddb2a7f4a1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MjI0Nzd8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NjE2MzAwODR8&ixlib=rb-4.1.0&q=80&w=1080",
+      "targetDescription": "The Port of Rotterdam. As we slowly sailed towards the dock, the photography adventure was already off to a cracking start. This is the largest port in Europe.",
+      "targetSource": "unsplash",
+      "revealed": false
+    },
+    {
+      "code": "WNQ1-8FWK",
+      "targetUrl": "https://images.unsplash.com/photo-1759149784774-d113f3258cdc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MjI0Nzd8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NjE2MzAwODR8&ixlib=rb-4.1.0&q=80&w=1080",
+      "targetDescription": "An open book with gold-gilded pages on a wooden surface.",
+      "targetSource": "unsplash",
+      "revealed": false
+    },
+    {
+      "code": "1WEX-YKEX",
+      "targetUrl": "https://images.unsplash.com/photo-1759395940997-c6a84528fc36?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MjI0Nzd8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NjE2MzAwODV8&ixlib=rb-4.1.0&q=80&w=1080",
+      "targetDescription": "A white spider mum in a glass vase.",
+      "targetSource": "unsplash",
+      "revealed": false
+    },
+    {
+      "code": "0PXJ-47JR",
+      "targetUrl": "https://images.unsplash.com/photo-1760195531458-923dbce4ea21?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MjI0Nzd8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NjE2MzAwODV8&ixlib=rb-4.1.0&q=80&w=1080",
+      "targetDescription": "Looking up through a glass roof into old buildings",
+      "targetSource": "unsplash",
+      "revealed": false
+    }
+  ],
+  "createdAt": "2025-10-28T05:41:23.351Z",
+  "revealAt": "2025-10-28T06:41:23.351Z"
+}
