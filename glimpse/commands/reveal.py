@@ -116,6 +116,26 @@ def show_target(target, session):
     click.echo('  Image URL:')
     click.echo('  ' + click.style(target['targetUrl'], fg='blue'))
 
+    # Display links for Street View
+    if target.get('targetSource') == 'google_streetview':
+        click.echo()
+        if target.get('targetSourceUrl'):
+            click.echo('  Street View:')
+            click.echo('  ' + click.style(target['targetSourceUrl'], fg='blue'))
+        if target.get('targetLocationUrl'):
+            click.echo()
+            click.echo('  Location on Map:')
+            click.echo('  ' + click.style(target['targetLocationUrl'], fg='blue'))
+
+    # Display metadata for Street View
+    if target.get('targetSource') == 'google_streetview':
+        if target.get('targetDate') or target.get('targetCopyright'):
+            click.echo()
+        if target.get('targetDate'):
+            click.echo(f"  Captured: {click.style(target['targetDate'], fg='bright_black')}")
+        if target.get('targetCopyright'):
+            click.echo(f"  Copyright: {click.style(target['targetCopyright'], fg='bright_black')}")
+
     click.echo()
 
     if target.get('revealedAt'):

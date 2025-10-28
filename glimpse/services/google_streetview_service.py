@@ -81,7 +81,13 @@ class GoogleStreetViewService:
         Fetch a random Street View image from a location where Street View exists
 
         Returns:
-            Dictionary with url, description, and sourceUrl keys
+            Dictionary with keys:
+            - url: Street View image URL
+            - description: Image description
+            - sourceUrl: Google Maps Street View URL
+            - locationUrl: Google Maps location URL (non-Street View)
+            - date: (optional) Date when Street View was captured (e.g., "2018-01")
+            - copyright: (optional) Copyright/photographer attribution
 
         Raises:
             Exception: If unable to find a valid Street View location after max retries
@@ -117,17 +123,33 @@ class GoogleStreetViewService:
                 param_str = '&'.join(f'{k}={v}' for k, v in params.items())
                 photo_url = f'{self.image_url}?{param_str}'
 
-                # Build Google Maps URL for the source
-                maps_url = f'https://www.google.com/maps/@{actual_lat},{actual_lon},3a,75y,{params["heading"]}h,90t/data=!3m6!1e1'
+                # Build Google Maps URL for Street View
+                maps_streetview_url = f'https://www.google.com/maps/@{actual_lat},{actual_lon},3a,75y,{params["heading"]}h,90t/data=!3m6!1e1'
+
+                # Build regular Google Maps URL for the exact location
+                maps_location_url = f'https://www.google.com/maps?q={actual_lat},{actual_lon}'
 
                 # Generate description
                 description = f'Street View at coordinates {actual_lat:.6f}, {actual_lon:.6f}'
 
-                return {
+                # Extract metadata
+                date = metadata.get('date')
+                copyright_text = metadata.get('copyright')
+
+                result = {
                     'url': photo_url,
                     'description': description,
-                    'sourceUrl': maps_url
+                    'sourceUrl': maps_streetview_url,
+                    'locationUrl': maps_location_url
                 }
+
+                # Add optional metadata if available
+                if date:
+                    result['date'] = date
+                if copyright_text:
+                    result['copyright'] = copyright_text
+
+                return result
 
         # If we get here, we failed to find a valid location
         raise Exception(
