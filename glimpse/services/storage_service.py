@@ -96,24 +96,30 @@ class StorageService:
             lines.append('')
             lines.append(target['targetDescription'])
             lines.append('')
-            lines.append('**Image:**')
-            lines.append('')
-            lines.append(f"![Target Image]({target['targetUrl']})")
-            lines.append('')
 
             # Generate appropriate link text based on source
             source = target.get('targetSource', 'unsplash')
-            source_url = target.get('targetSourceUrl', target['targetUrl'])
+            target_url = target['targetUrl']
             location_url = target.get('targetLocationUrl')
 
             if source == 'google_streetview':
-                lines.append('[View in Street View](' + source_url + ')')
+                lines.append('**Street View:**')
+                lines.append('')
+                lines.append('[View Interactive Panorama](' + target_url + ')')
                 if location_url:
                     lines.append(' • [View Location on Map](' + location_url + ')')
             elif source == 'unsplash':
-                lines.append(f"[View on Unsplash]({source_url})")
+                lines.append('**Image:**')
+                lines.append('')
+                lines.append(f"![Target Image]({target_url})")
+                lines.append('')
+                lines.append(f"[View on Unsplash]({target_url})")
             else:
-                lines.append(f"[View Source]({source_url})")
+                lines.append('**Image:**')
+                lines.append('')
+                lines.append(f"![Target Image]({target_url})")
+                lines.append('')
+                lines.append(f"[View Source]({target_url})")
 
             lines.append('')
 
