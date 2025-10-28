@@ -10,7 +10,8 @@
       "Bash(npm run build:*)",
       "Bash(npm run dev:*)",
       "Bash(node dist/index.js:*)",
-      "Bash(git remote:*)"
+      "Bash(git remote:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []

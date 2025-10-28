@@ -10,12 +10,16 @@ export class JsonStorageService implements StorageAdapter {
     this.dataDir = dataDir;
   }
 
+  private getSessionDir(id: string): string {
+    return path.join(this.dataDir, 'sessions', id);
+  }
+
   private getSessionPath(id: string): string {
-    return path.join(this.dataDir, 'sessions', `${id}.json`);
+    return path.join(this.getSessionDir(id), 'session.json');
   }
 
   private getSessionMarkdownPath(id: string): string {
-    return path.join(this.dataDir, 'sessions', `${id}.md`);
+    return path.join(this.getSessionDir(id), 'session.md');
   }
 
   private generateMarkdown(session: RVSession): string {
@@ -86,10 +90,14 @@ export class JsonStorageService implements StorageAdapter {
 
   async saveSession(session: RVSession): Promise<void> {
     await this.ensureDataDirectory();
+    const sessionDir = this.getSessionDir(session.id);
     const jsonPath = this.getSessionPath(session.id);
     const mdPath = this.getSessionMarkdownPath(session.id);
 
     try {
+      // Create session directory
+      await fs.mkdir(sessionDir, { recursive: true });
+
       // Save JSON file
       await fs.writeFile(jsonPath, JSON.stringify(session, null, 2), 'utf-8');
       logger.debug(`Session ${session.id} saved to ${jsonPath}`);
@@ -131,12 +139,13 @@ export class JsonStorageService implements StorageAdapter {
     const sessionsDir = path.join(this.dataDir, 'sessions');
 
     try {
-      const files = await fs.readdir(sessionsDir);
+      const entries = await fs.readdir(sessionsDir, { withFileTypes: true });
       const sessions: RVSession[] = [];
 
-      for (const file of files) {
-        if (file.endsWith('.json')) {
-          const id = file.replace('.json', '');
+      for (const entry of entries) {
+        // Skip files, only process directories
+        if (entry.isDirectory()) {
+          const id = entry.name;
           const session = await this.getSession(id);
           if (session) {
             sessions.push(session);
@@ -163,10 +172,10 @@ export class JsonStorageService implements StorageAdapter {
   }
 
   async deleteSession(id: string): Promise<void> {
-    const filePath = this.getSessionPath(id);
+    const sessionDir = this.getSessionDir(id);
 
     try {
-      await fs.unlink(filePath);
+      await fs.rm(sessionDir, { recursive: true, force: true });
       logger.debug(`Session ${id} deleted`);
     } catch (error) {
       logger.error('Failed to delete session:', error);
