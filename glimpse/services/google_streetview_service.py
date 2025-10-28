@@ -17,9 +17,9 @@ class GoogleStreetViewService:
         self.image_url = 'https://maps.googleapis.com/maps/api/streetview'
         self.name = 'google_streetview'
 
-        # Image size for Street View (16:9 aspect ratio, 720p HD)
-        # Testing shows 1280x720 works, 1920x1080 gets downscaled to 1280x720
-        self.image_size = '1280x720'
+        # Image size for Street View (16:9 aspect ratio)
+        # Google API maximum is 640x640, so best 16:9 ratio is 640x360
+        self.image_size = '640x360'
 
         # Max retries when looking for valid Street View locations
         self.max_retries = 20
