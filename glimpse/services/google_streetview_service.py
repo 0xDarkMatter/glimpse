@@ -87,7 +87,6 @@ class GoogleStreetViewService:
             - sourceUrl: Google Maps Street View URL
             - locationUrl: Google Maps location URL (non-Street View)
             - date: (optional) Date when Street View was captured (e.g., "2018-01")
-            - copyright: (optional) Copyright/photographer attribution
 
         Raises:
             Exception: If unable to find a valid Street View location after max retries
@@ -134,7 +133,6 @@ class GoogleStreetViewService:
 
                 # Extract metadata
                 date = metadata.get('date')
-                copyright_text = metadata.get('copyright')
 
                 result = {
                     'url': photo_url,
@@ -146,8 +144,6 @@ class GoogleStreetViewService:
                 # Add optional metadata if available
                 if date:
                     result['date'] = date
-                if copyright_text:
-                    result['copyright'] = copyright_text
 
                 return result
 

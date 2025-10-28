@@ -104,8 +104,6 @@ def create(duration, targets, name, source):
                     target_dict['targetLocationUrl'] = image['locationUrl']
                 if image.get('date'):
                     target_dict['targetDate'] = image['date']
-                if image.get('copyright'):
-                    target_dict['targetCopyright'] = image['copyright']
 
                 target_list.append(target_dict)
             except Exception as e:
