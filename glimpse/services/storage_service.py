@@ -91,43 +91,41 @@ class StorageService:
             status = 'Revealed' if target['revealed'] else 'Pending'
             lines.append(f"**Status:** {status}")
             lines.append(f"**Source:** {target['targetSource']}")
+            lines.append('')
+            lines.append('**Description:**')
+            lines.append('')
+            lines.append(target['targetDescription'])
+            lines.append('')
+            lines.append('**Image:**')
+            lines.append('')
+            lines.append(f"![Target Image]({target['targetUrl']})")
+            lines.append('')
 
-            if target['revealed']:
-                lines.append('')
-                lines.append('**Description:**')
-                lines.append('')
-                lines.append(target['targetDescription'])
-                lines.append('')
-                lines.append('**Image:**')
-                lines.append('')
-                lines.append(f"![Target Image]({target['targetUrl']})")
-                lines.append('')
+            # Generate appropriate link text based on source
+            source = target.get('targetSource', 'unsplash')
+            source_url = target.get('targetSourceUrl', target['targetUrl'])
+            location_url = target.get('targetLocationUrl')
 
-                # Generate appropriate link text based on source
-                source = target.get('targetSource', 'unsplash')
-                source_url = target.get('targetSourceUrl', target['targetUrl'])
-                location_url = target.get('targetLocationUrl')
+            if source == 'google_streetview':
+                lines.append('[View in Street View](' + source_url + ')')
+                if location_url:
+                    lines.append(' • [View Location on Map](' + location_url + ')')
+            elif source == 'unsplash':
+                lines.append(f"[View on Unsplash]({source_url})")
+            else:
+                lines.append(f"[View Source]({source_url})")
 
-                if source == 'google_streetview':
-                    lines.append('[View in Street View](' + source_url + ')')
-                    if location_url:
-                        lines.append(' • [View Location on Map](' + location_url + ')')
-                elif source == 'unsplash':
-                    lines.append(f"[View on Unsplash]({source_url})")
-                else:
-                    lines.append(f"[View Source]({source_url})")
+            lines.append('')
 
-                lines.append('')
+            # Add metadata for Street View
+            if source == 'google_streetview':
+                if target.get('targetDate'):
+                    formatted_date = format_capture_date(target['targetDate'])
+                    lines.append(f"**Captured:** {formatted_date}")
+                    lines.append('')
 
-                # Add metadata for Street View
-                if source == 'google_streetview':
-                    if target.get('targetDate'):
-                        formatted_date = format_capture_date(target['targetDate'])
-                        lines.append(f"**Captured:** {formatted_date}")
-                        lines.append('')
-
-                if target.get('revealedAt'):
-                    lines.append(f"**Revealed At:** {format_timestamp(target['revealedAt'])}")
+            if target.get('revealedAt'):
+                lines.append(f"**Revealed At:** {format_timestamp(target['revealedAt'])}")
 
             lines.append('')
             lines.append('---')

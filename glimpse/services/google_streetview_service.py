@@ -1,8 +1,9 @@
 """Google Street View API service for fetching random Street View images"""
 
+import math
 import random
 import requests
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Optional
 
 
 class GoogleStreetViewService:
@@ -40,7 +41,53 @@ class GoogleStreetViewService:
 
         return lat, lon
 
-    def _check_streetview_availability(self, lat: float, lon: float) -> Dict:
+    def _calculate_distance(self, lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+        """
+        Calculate distance between two coordinates using Haversine formula
+
+        Args:
+            lat1, lon1: First coordinate
+            lat2, lon2: Second coordinate
+
+        Returns:
+            Distance in meters
+        """
+        R = 6371000  # Earth's radius in meters
+
+        phi1 = math.radians(lat1)
+        phi2 = math.radians(lat2)
+        delta_phi = math.radians(lat2 - lat1)
+        delta_lambda = math.radians(lon2 - lon1)
+
+        a = math.sin(delta_phi / 2) ** 2 + \
+            math.cos(phi1) * math.cos(phi2) * \
+            math.sin(delta_lambda / 2) ** 2
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+        return R * c
+
+    def _is_valid_location(self, lat: float, lon: float) -> bool:
+        """
+        Check if coordinates are reasonable (not obviously in ocean or invalid)
+
+        Args:
+            lat: Latitude
+            lon: Longitude
+
+        Returns:
+            True if coordinates seem valid
+        """
+        # Reject coordinates that are too close to 0,0 (Gulf of Guinea - usually ocean)
+        if abs(lat) < 0.1 and abs(lon) < 0.1:
+            return False
+
+        # Reject if either coordinate is exactly 0
+        if lat == 0.0 or lon == 0.0:
+            return False
+
+        return True
+
+    def _check_streetview_availability(self, lat: float, lon: float) -> Optional[Dict]:
         """
         Check if Street View is available at the given coordinates
 
@@ -55,7 +102,7 @@ class GoogleStreetViewService:
             params = {
                 'location': f'{lat},{lon}',
                 'key': self.api_key,
-                'radius': 50000  # Search radius in meters (50km)
+                'radius': 5000  # Search radius in meters (5km) - reduced from 50km
             }
 
             response = requests.get(
@@ -69,6 +116,23 @@ class GoogleStreetViewService:
 
             # Check if Street View is available at this location
             if metadata.get('status') == 'OK':
+                # Get the actual coordinates returned by the API
+                actual_lat = metadata.get('location', {}).get('lat')
+                actual_lon = metadata.get('location', {}).get('lng')
+
+                if actual_lat is None or actual_lon is None:
+                    return None
+
+                # Validate the returned coordinates
+                if not self._is_valid_location(actual_lat, actual_lon):
+                    return None
+
+                # Check distance between requested and returned location
+                # Reject if too far (indicates no nearby Street View)
+                distance = self._calculate_distance(lat, lon, actual_lat, actual_lon)
+                if distance > 5000:  # More than 5km away
+                    return None
+
                 return metadata
             else:
                 return None
@@ -122,8 +186,14 @@ class GoogleStreetViewService:
                 param_str = '&'.join(f'{k}={v}' for k, v in params.items())
                 photo_url = f'{self.image_url}?{param_str}'
 
-                # Build Google Maps URL for Street View
-                maps_streetview_url = f'https://www.google.com/maps/@{actual_lat},{actual_lon},3a,75y,{params["heading"]}h,90t/data=!3m6!1e1'
+                # Build Google Maps URL for Street View using panorama ID
+                pano_id = metadata.get('pano_id', '')
+                if pano_id:
+                    # Use panorama ID for reliable Street View link
+                    maps_streetview_url = f'https://www.google.com/maps/@?api=1&map_action=pano&pano={pano_id}&heading={params["heading"]}&pitch=0&fov=90'
+                else:
+                    # Fallback to coordinate-based link
+                    maps_streetview_url = f'https://www.google.com/maps/@{actual_lat},{actual_lon},3a,75y,{params["heading"]}h,90t/data=!3m6!1e1'
 
                 # Build regular Google Maps URL for the exact location
                 maps_location_url = f'https://www.google.com/maps?q={actual_lat},{actual_lon}'
