@@ -91,7 +91,19 @@ class StorageService:
                 lines.append('')
                 lines.append(f"![Target Image]({target['targetUrl']})")
                 lines.append('')
-                lines.append(f"[View on Unsplash]({target['targetUrl']})")
+
+                # Generate appropriate link text based on source
+                source = target.get('targetSource', 'unsplash')
+                source_url = target.get('targetSourceUrl', target['targetUrl'])
+
+                if source == 'google_streetview':
+                    link_text = 'View on Google Maps'
+                elif source == 'unsplash':
+                    link_text = 'View on Unsplash'
+                else:
+                    link_text = 'View Source'
+
+                lines.append(f"[{link_text}]({source_url})")
                 lines.append('')
                 if target.get('revealedAt'):
                     lines.append(f"**Revealed At:** {target['revealedAt']}")
