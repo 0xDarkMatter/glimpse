@@ -68,14 +68,14 @@ class GoogleStreetViewService:
 
     def _is_valid_location(self, lat: float, lon: float) -> bool:
         """
-        Check if coordinates are reasonable (not obviously in ocean or invalid)
+        Check if coordinates are on land using reverse geocoding
 
         Args:
             lat: Latitude
             lon: Longitude
 
         Returns:
-            True if coordinates seem valid
+            True if coordinates are on land with a valid address
         """
         # Reject coordinates that are too close to 0,0 (Gulf of Guinea - usually ocean)
         if abs(lat) < 0.1 and abs(lon) < 0.1:
@@ -85,7 +85,46 @@ class GoogleStreetViewService:
         if lat == 0.0 or lon == 0.0:
             return False
 
-        return True
+        # Use reverse geocoding to verify this is a land location
+        try:
+            geocode_url = 'https://maps.googleapis.com/maps/api/geocode/json'
+            params = {
+                'latlng': f'{lat},{lon}',
+                'key': self.api_key
+            }
+
+            response = requests.get(geocode_url, params=params, timeout=10)
+            response.raise_for_status()
+
+            data = response.json()
+
+            # Check if we got valid results
+            if data.get('status') != 'OK' or not data.get('results'):
+                # No geocoding results - might be remote area, allow it
+                return True
+
+            # Check if any result indicates this is a real address on land
+            for result in data['results']:
+                types = result.get('types', [])
+                formatted_address = result.get('formatted_address', '').lower()
+
+                # Explicitly reject if it's clearly water/ocean in the address
+                if any(word in formatted_address for word in ['ocean', 'sea', 'mediterranean', 'atlantic', 'pacific', 'indian ocean']):
+                    return False
+
+                # Accept if it has a street address, route, or locality
+                good_types = ['street_address', 'route', 'premise', 'locality',
+                              'sublocality', 'postal_code', 'administrative_area',
+                              'political', 'country']
+                if any(t in types for t in good_types):
+                    return True
+
+            # If we got results but none matched, allow it (might be remote area)
+            return True
+
+        except Exception:
+            # If geocoding fails, allow it (don't be too strict)
+            return True
 
     def _check_streetview_availability(self, lat: float, lon: float) -> Optional[Dict]:
         """
@@ -102,7 +141,7 @@ class GoogleStreetViewService:
             params = {
                 'location': f'{lat},{lon}',
                 'key': self.api_key,
-                'radius': 5000  # Search radius in meters (5km) - reduced from 50km
+                'radius': 50000  # Search radius in meters (50km)
             }
 
             response = requests.get(
@@ -130,7 +169,7 @@ class GoogleStreetViewService:
                 # Check distance between requested and returned location
                 # Reject if too far (indicates no nearby Street View)
                 distance = self._calculate_distance(lat, lon, actual_lat, actual_lon)
-                if distance > 5000:  # More than 5km away
+                if distance > 50000:  # More than 50km away
                     return None
 
                 return metadata
