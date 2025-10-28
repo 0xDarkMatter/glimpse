@@ -113,19 +113,17 @@ def show_target(target, session):
         click.echo('  ' + click.style(line, fg='yellow'))
 
     click.echo()
-    click.echo('  Image URL:')
+    if target.get('targetSource') == 'google_streetview':
+        click.echo('  Street View Panorama:')
+    else:
+        click.echo('  Image URL:')
     click.echo('  ' + click.style(target['targetUrl'], fg='blue'))
 
-    # Display links for Street View
-    if target.get('targetSource') == 'google_streetview':
+    # Display location link for Street View
+    if target.get('targetSource') == 'google_streetview' and target.get('targetLocationUrl'):
         click.echo()
-        if target.get('targetSourceUrl'):
-            click.echo('  Street View:')
-            click.echo('  ' + click.style(target['targetSourceUrl'], fg='blue'))
-        if target.get('targetLocationUrl'):
-            click.echo()
-            click.echo('  Location on Map:')
-            click.echo('  ' + click.style(target['targetLocationUrl'], fg='blue'))
+        click.echo('  Location on Map:')
+        click.echo('  ' + click.style(target['targetLocationUrl'], fg='blue'))
 
     # Display metadata for Street View
     if target.get('targetSource') == 'google_streetview':

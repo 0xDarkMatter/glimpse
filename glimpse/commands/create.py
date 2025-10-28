@@ -93,10 +93,9 @@ def create(duration, targets, name, source, debug):
 
                 target_dict = {
                     'code': code,
-                    'targetUrl': image['url'],
+                    'targetUrl': image['url'],  # Street View panorama URL
                     'targetDescription': image['description'],
                     'targetSource': image_service.name,
-                    'targetSourceUrl': image.get('sourceUrl', image['url']),
                     'revealed': False
                 }
 
@@ -171,14 +170,9 @@ def create(duration, targets, name, source, debug):
             click.echo()
             click.echo(f'  Description: {target["targetDescription"]}')
             click.echo()
-            click.echo('  Image URL:')
+            click.echo('  Street View Panorama:')
             click.echo(f'  {target["targetUrl"]}')
             click.echo()
-
-            if target.get('targetSourceUrl'):
-                click.echo('  Street View Link:')
-                click.echo(f'  {target["targetSourceUrl"]}')
-                click.echo()
 
             if target.get('targetLocationUrl'):
                 click.echo('  Location on Map:')

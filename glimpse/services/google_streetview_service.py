@@ -182,14 +182,13 @@ class GoogleStreetViewService:
 
     def fetch_random_image(self) -> Dict[str, str]:
         """
-        Fetch a random Street View image from a location where Street View exists
+        Fetch a random Street View location with interactive panorama link
 
         Returns:
             Dictionary with keys:
-            - url: Street View image URL
-            - description: Image description
-            - sourceUrl: Google Maps Street View URL
-            - locationUrl: Google Maps location URL (non-Street View)
+            - url: Google Maps Street View panorama URL (interactive)
+            - description: Description with coordinates
+            - locationUrl: Google Maps location URL (map pin)
             - date: (optional) Date when Street View was captured (e.g., "2018-01")
 
         Raises:
@@ -207,33 +206,21 @@ class GoogleStreetViewService:
             metadata = self._check_streetview_availability(lat, lon)
 
             if metadata:
-                # Street View found! Generate the image URL
+                # Street View found! Generate the panorama URL
                 actual_lat = metadata['location']['lat']
                 actual_lon = metadata['location']['lng']
                 pano_id = metadata.get('pano_id', '')
 
-                # Build the Street View image URL
-                params = {
-                    'location': f'{actual_lat},{actual_lon}',
-                    'size': self.image_size,
-                    'key': self.api_key,
-                    'fov': 90,  # Field of view
-                    'pitch': 0,  # Camera pitch (0 = straight ahead)
-                    'heading': random.randint(0, 359)  # Random heading direction
-                }
-
-                # Construct URL with parameters
-                param_str = '&'.join(f'{k}={v}' for k, v in params.items())
-                photo_url = f'{self.image_url}?{param_str}'
+                # Random heading direction for variety
+                heading = random.randint(0, 359)
 
                 # Build Google Maps URL for Street View using panorama ID
-                pano_id = metadata.get('pano_id', '')
                 if pano_id:
                     # Use panorama ID for reliable Street View link
-                    maps_streetview_url = f'https://www.google.com/maps/@?api=1&map_action=pano&pano={pano_id}&heading={params["heading"]}&pitch=0&fov=90'
+                    streetview_url = f'https://www.google.com/maps/@?api=1&map_action=pano&pano={pano_id}&heading={heading}&pitch=0&fov=90'
                 else:
                     # Fallback to coordinate-based link
-                    maps_streetview_url = f'https://www.google.com/maps/@{actual_lat},{actual_lon},3a,75y,{params["heading"]}h,90t/data=!3m6!1e1'
+                    streetview_url = f'https://www.google.com/maps/@{actual_lat},{actual_lon},3a,75y,{heading}h,90t/data=!3m6!1e1'
 
                 # Build regular Google Maps URL for the exact location
                 maps_location_url = f'https://www.google.com/maps?q={actual_lat},{actual_lon}'
@@ -245,9 +232,8 @@ class GoogleStreetViewService:
                 date = metadata.get('date')
 
                 result = {
-                    'url': photo_url,
+                    'url': streetview_url,
                     'description': description,
-                    'sourceUrl': maps_streetview_url,
                     'locationUrl': maps_location_url
                 }
 
