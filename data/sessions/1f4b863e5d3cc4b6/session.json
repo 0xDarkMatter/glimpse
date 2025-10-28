@@ -1,0 +1,29 @@
+{
+  "id": "1f4b863e5d3cc4b6",
+  "name": "Folder Structure Test",
+  "targets": [
+    {
+      "code": "5JG4-E930",
+      "targetUrl": "https://images.unsplash.com/photo-1759392658577-4324fb89b991?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MjI0Nzd8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NjE2NDA5MDZ8&ixlib=rb-4.1.0&q=80&w=1080",
+      "targetDescription": "Abstract fluid shapes in green and blue hues",
+      "targetSource": "unsplash",
+      "revealed": false
+    },
+    {
+      "code": "MZBK-Q2W6",
+      "targetUrl": "https://images.unsplash.com/photo-1760423203346-aebb71eee58f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MjI0Nzd8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NjE2NDA5MDd8&ixlib=rb-4.1.0&q=80&w=1080",
+      "targetDescription": "Bare trees in a field of golden grass",
+      "targetSource": "unsplash",
+      "revealed": false
+    },
+    {
+      "code": "AZBV-XZD3",
+      "targetUrl": "https://images.unsplash.com/photo-1760024101626-d6d5709aad3d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MjI0Nzd8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NjE2NDA5MDd8&ixlib=rb-4.1.0&q=80&w=1080",
+      "targetDescription": "Blurred stage lights with audience silhouettes",
+      "targetSource": "unsplash",
+      "revealed": false
+    }
+  ],
+  "createdAt": "2025-10-28T08:41:46.292Z",
+  "revealAt": "2025-10-28T09:11:46.292Z"
+}
