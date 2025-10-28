@@ -9,6 +9,7 @@ import click
 from glimpse.services.storage_service import StorageService
 from glimpse.services.unsplash_service import UnsplashService
 from glimpse.utils.code_generator import generate_code
+from glimpse.utils.helpers import get_data_dir
 
 
 @click.command()
@@ -35,8 +36,7 @@ def create(duration, targets, name, source):
     # Initialize services
     try:
         image_service = UnsplashService(unsplash_key)
-        data_dir = os.path.join(os.getcwd(), 'data')
-        storage = StorageService(data_dir)
+        storage = StorageService(get_data_dir())
     except Exception as e:
         click.echo(click.style(f'Error initializing services: {e}', fg='red'))
         return

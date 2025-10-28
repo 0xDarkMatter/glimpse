@@ -1,19 +1,18 @@
 """List command for showing all sessions"""
 
-import os
 from datetime import datetime
 
 import click
 
 from glimpse.services.storage_service import StorageService
+from glimpse.utils.helpers import get_data_dir
 
 
 @click.command('list')
 def list_sessions():
     """List all RV sessions"""
 
-    data_dir = os.path.join(os.getcwd(), 'data')
-    storage = StorageService(data_dir)
+    storage = StorageService(get_data_dir())
 
     sessions = storage.get_all_sessions()
 

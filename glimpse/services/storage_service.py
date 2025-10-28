@@ -138,7 +138,7 @@ class StorageService:
                 if dt.tzinfo is not None:
                     dt = dt.replace(tzinfo=None)
                 return dt
-            except:
+            except Exception:
                 return datetime.min
 
         sessions.sort(key=get_datetime, reverse=True)
