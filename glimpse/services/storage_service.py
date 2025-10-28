@@ -7,6 +7,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
 
+from glimpse.utils.helpers import format_capture_date
+
 
 def format_timestamp(iso_timestamp: str) -> str:
     """Format ISO timestamp to human-readable format"""
@@ -119,14 +121,9 @@ class StorageService:
 
                 # Add metadata for Street View
                 if source == 'google_streetview':
-                    metadata_added = False
                     if target.get('targetDate'):
-                        lines.append(f"**Captured:** {target['targetDate']}")
-                        metadata_added = True
-                    if target.get('targetCopyright'):
-                        lines.append(f"**Copyright:** {target['targetCopyright']}")
-                        metadata_added = True
-                    if metadata_added:
+                        formatted_date = format_capture_date(target['targetDate'])
+                        lines.append(f"**Captured:** {formatted_date}")
                         lines.append('')
 
                 if target.get('revealedAt'):

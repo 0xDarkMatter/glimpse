@@ -6,7 +6,7 @@ import click
 
 from glimpse.services.storage_service import StorageService
 from glimpse.utils.code_generator import normalize_code
-from glimpse.utils.helpers import get_data_dir
+from glimpse.utils.helpers import get_data_dir, format_capture_date
 
 
 @click.command()
@@ -129,12 +129,10 @@ def show_target(target, session):
 
     # Display metadata for Street View
     if target.get('targetSource') == 'google_streetview':
-        if target.get('targetDate') or target.get('targetCopyright'):
-            click.echo()
         if target.get('targetDate'):
-            click.echo(f"  Captured: {click.style(target['targetDate'], fg='bright_black')}")
-        if target.get('targetCopyright'):
-            click.echo(f"  Copyright: {click.style(target['targetCopyright'], fg='bright_black')}")
+            click.echo()
+            formatted_date = format_capture_date(target['targetDate'])
+            click.echo(f"  Captured: {click.style(formatted_date, fg='bright_black')}")
 
     click.echo()
 
