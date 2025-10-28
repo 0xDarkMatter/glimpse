@@ -3,6 +3,7 @@
 import click
 from dotenv import load_dotenv
 
+from glimpse import __version__
 from glimpse.commands import create, list_cmd, reveal, status
 
 # Load environment variables
@@ -10,7 +11,7 @@ load_dotenv()
 
 
 @click.group()
-@click.version_option(version='0.2.0')
+@click.version_option(version=__version__)
 def cli():
     """CLI application for Remote Viewing testing with random target images"""
     pass
