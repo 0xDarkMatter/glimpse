@@ -8,25 +8,47 @@ import click
 
 from glimpse.services.storage_service import StorageService
 from glimpse.services.unsplash_service import UnsplashService
+from glimpse.services.google_streetview_service import GoogleStreetViewService
 from glimpse.utils.code_generator import generate_code
 from glimpse.utils.helpers import get_data_dir
+
+
+def get_image_service(source: str):
+    """Get the appropriate image service based on source"""
+    if source == 'unsplash':
+        api_key = os.getenv('UNSPLASH_ACCESS_KEY')
+        if not api_key:
+            raise ValueError(
+                'UNSPLASH_ACCESS_KEY not found in environment.\n'
+                'Please set it in your .env file.\n'
+                'Get your key at: https://unsplash.com/developers'
+            )
+        return UnsplashService(api_key)
+
+    elif source == 'google_streetview':
+        api_key = os.getenv('GOOGLE_MAPS_API_KEY')
+        if not api_key:
+            raise ValueError(
+                'GOOGLE_MAPS_API_KEY not found in environment.\n'
+                'Please set it in your .env file.\n'
+                'Get your key at: https://console.cloud.google.com/\n'
+                'Enable "Street View Static API" for your project.'
+            )
+        return GoogleStreetViewService(api_key)
+
+    else:
+        raise ValueError(f'Unknown image source: {source}')
 
 
 @click.command()
 @click.option('-d', '--duration', default=60, type=int, help='Duration until reveal (in minutes)')
 @click.option('-t', '--targets', default=1, type=int, help='Number of targets to create')
 @click.option('-n', '--name', default=None, help='Optional session name')
-@click.option('-s', '--source', default='unsplash', help='Image source (unsplash)')
+@click.option('-s', '--source', default='unsplash',
+              type=click.Choice(['unsplash', 'google_streetview'], case_sensitive=False),
+              help='Image source to use')
 def create(duration, targets, name, source):
     """Create a new RV session with random target images"""
-
-    # Validate environment
-    unsplash_key = os.getenv('UNSPLASH_ACCESS_KEY')
-    if not unsplash_key:
-        click.echo(click.style('Error: Unsplash API key not found', fg='red'))
-        click.echo(click.style('\nPlease set UNSPLASH_ACCESS_KEY in your .env file or environment', fg='yellow'))
-        click.echo(click.style('Get your key at: https://unsplash.com/developers\n', fg='bright_black'))
-        return
 
     # Validate target count
     if targets < 1 or targets > 10:
@@ -35,8 +57,12 @@ def create(duration, targets, name, source):
 
     # Initialize services
     try:
-        image_service = UnsplashService(unsplash_key)
+        image_service = get_image_service(source)
         storage = StorageService(get_data_dir())
+    except ValueError as e:
+        click.echo(click.style(f'Error: {str(e)}', fg='red'))
+        click.echo()
+        return
     except Exception as e:
         click.echo(click.style(f'Error initializing services: {e}', fg='red'))
         return
@@ -68,7 +94,8 @@ def create(duration, targets, name, source):
                     'code': code,
                     'targetUrl': image['url'],
                     'targetDescription': image['description'],
-                    'targetSource': 'unsplash',
+                    'targetSource': image_service.name,
+                    'targetSourceUrl': image.get('sourceUrl', image['url']),
                     'revealed': False
                 })
             except Exception as e:
