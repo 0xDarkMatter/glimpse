@@ -172,17 +172,17 @@ def create(duration, targets, name, source, debug):
             click.echo(f'  Description: {target["targetDescription"]}')
             click.echo()
             click.echo('  Image URL:')
-            click.echo(f'  {click.style(target["targetUrl"], fg="blue")}')
+            click.echo(f'  {target["targetUrl"]}')
             click.echo()
 
             if target.get('targetSourceUrl'):
                 click.echo('  Street View Link:')
-                click.echo(f'  {click.style(target["targetSourceUrl"], fg="blue")}')
+                click.echo(f'  {target["targetSourceUrl"]}')
                 click.echo()
 
             if target.get('targetLocationUrl'):
                 click.echo('  Location on Map:')
-                click.echo(f'  {click.style(target["targetLocationUrl"], fg="blue")}')
+                click.echo(f'  {target["targetLocationUrl"]}')
                 click.echo()
 
             if target.get('targetDate'):
