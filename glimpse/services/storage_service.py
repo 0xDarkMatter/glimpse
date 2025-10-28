@@ -15,8 +15,33 @@ class StorageService:
         self.data_dir = data_dir
         self.sessions_dir = os.path.join(data_dir, 'sessions')
 
-    def _get_session_dir(self, session_id: str) -> str:
-        """Get the directory path for a session"""
+    def _get_session_dir(self, session_id: str, session_data: Optional[Dict] = None) -> str:
+        """
+        Get the directory path for a session
+
+        Args:
+            session_id: The session ID
+            session_data: Optional session data for creating new folders with timestamp
+
+        Returns:
+            Directory path for the session
+        """
+        # If creating a new session, use timestamp prefix
+        if session_data and 'createdAt' in session_data:
+            created_at = datetime.fromisoformat(session_data['createdAt'])
+            timestamp = created_at.strftime('%Y%m%d%H%M')
+            folder_name = f"{timestamp}_{session_id}"
+            return os.path.join(self.sessions_dir, folder_name)
+
+        # Otherwise, find existing folder by session_id
+        try:
+            for entry in os.listdir(self.sessions_dir):
+                if entry.endswith(f'_{session_id}') or entry == session_id:
+                    return os.path.join(self.sessions_dir, entry)
+        except FileNotFoundError:
+            pass
+
+        # Fallback to session_id only (for backwards compatibility)
         return os.path.join(self.sessions_dir, session_id)
 
     def _get_session_path(self, session_id: str) -> str:
@@ -62,9 +87,11 @@ class StorageService:
                 lines.append('')
                 lines.append(target['targetDescription'])
                 lines.append('')
-                lines.append('**Image URL:**')
+                lines.append('**Image:**')
                 lines.append('')
-                lines.append(target['targetUrl'])
+                lines.append(f"![Target Image]({target['targetUrl']})")
+                lines.append('')
+                lines.append(f"[View on Unsplash]({target['targetUrl']})")
                 lines.append('')
                 if target.get('revealedAt'):
                     lines.append(f"**Revealed At:** {target['revealedAt']}")
@@ -88,9 +115,9 @@ class StorageService:
         """Save a session to JSON and markdown files"""
         self.ensure_data_directory()
 
-        session_dir = self._get_session_dir(session['id'])
-        json_path = self._get_session_path(session['id'])
-        md_path = self._get_session_markdown_path(session['id'])
+        session_dir = self._get_session_dir(session['id'], session)
+        json_path = os.path.join(session_dir, 'session.json')
+        md_path = os.path.join(session_dir, 'session.md')
 
         # Create session directory
         Path(session_dir).mkdir(parents=True, exist_ok=True)
@@ -124,7 +151,16 @@ class StorageService:
             for entry in os.listdir(self.sessions_dir):
                 entry_path = os.path.join(self.sessions_dir, entry)
                 if os.path.isdir(entry_path):
-                    session = self.get_session(entry)
+                    # Extract session_id from folder name
+                    # Format: {timestamp}_{session_id} or just {session_id}
+                    if '_' in entry and len(entry.split('_')[0]) == 12:
+                        # New format with timestamp
+                        session_id = entry.split('_', 1)[1]
+                    else:
+                        # Old format or session_id only
+                        session_id = entry
+
+                    session = self.get_session(session_id)
                     if session:
                         sessions.append(session)
         except FileNotFoundError:
