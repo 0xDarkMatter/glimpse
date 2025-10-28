@@ -47,7 +47,8 @@ def get_image_service(source: str):
 @click.option('-s', '--source', default='unsplash',
               type=click.Choice(['unsplash', 'google_streetview'], case_sensitive=False),
               help='Image source to use')
-def create(duration, targets, name, source):
+@click.option('--debug', is_flag=True, help='Display target details after creation')
+def create(duration, targets, name, source, debug):
     """Create a new RV session with random target images"""
 
     # Validate target count
@@ -156,3 +157,40 @@ def create(duration, targets, name, source):
     click.echo()
     click.echo(click.style('=' * 58, fg='green'))
     click.echo()
+
+    # Debug output
+    if debug:
+        click.echo()
+        click.echo(click.style('=' * 70, fg='yellow'))
+        click.echo(click.style('  DEBUG: TARGET DETAILS', fg='yellow', bold=True))
+        click.echo(click.style('=' * 70, fg='yellow'))
+        click.echo()
+
+        for i, target in enumerate(target_list, 1):
+            click.echo(click.style(f'Target {i}: {target["code"]}', fg='cyan', bold=True))
+            click.echo()
+            click.echo(f'  Description: {target["targetDescription"]}')
+            click.echo()
+            click.echo('  Image URL:')
+            click.echo(f'  {click.style(target["targetUrl"], fg="blue")}')
+            click.echo()
+
+            if target.get('targetSourceUrl'):
+                click.echo('  Street View Link:')
+                click.echo(f'  {click.style(target["targetSourceUrl"], fg="blue")}')
+                click.echo()
+
+            if target.get('targetLocationUrl'):
+                click.echo('  Location on Map:')
+                click.echo(f'  {click.style(target["targetLocationUrl"], fg="blue")}')
+                click.echo()
+
+            if target.get('targetDate'):
+                click.echo(f'  Captured: {target["targetDate"]}')
+                click.echo()
+
+            click.echo(click.style('-' * 70, fg='bright_black'))
+            click.echo()
+
+        click.echo(click.style('=' * 70, fg='yellow'))
+        click.echo()
